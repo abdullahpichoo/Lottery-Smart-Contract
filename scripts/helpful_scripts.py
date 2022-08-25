@@ -73,7 +73,7 @@ def fund_with_link(contract_address, acc=None, link_token=None, amount=LINK_AMOU
     if acc:
         acc = acc
     else:
-        acc = get_acc
+        acc = get_acc()
 
     if link_token:
         link_token = link_token
