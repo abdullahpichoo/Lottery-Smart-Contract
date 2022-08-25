@@ -76,12 +76,16 @@ contract Lottery is Ownable, VRFConsumerBase {
     {
         require(state == LOTTERY_STATE.running, "Still working!");
         require(_randomness > 0, "Random Number not Returned");
+        updateRandomness(_randomness);
         uint256 winner_index = _randomness % players.length;
         last_winner = players[winner_index];
         last_winner.transfer(address(this).balance);
         //Lottery Reset
         players = new address payable[](0);
-        random_val = _randomness;
         state = LOTTERY_STATE.close;
+    }
+
+    function updateRandomness(uint256 _randomness) public {
+        random_val = _randomness;
     }
 }
