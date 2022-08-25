@@ -5,6 +5,7 @@ from brownie import (
     Contract,
     MockV3Aggregator,
     VRFCoordinatorMock,
+    VRFCoordinatorV2Mock,
     LinkToken,
     interface,
 )
@@ -18,6 +19,7 @@ LOCAL_BLOCKCHAINS = ["development", "ganache-local"]
 contract_to_mock = {
     "eth-usd-priceFeed": MockV3Aggregator,
     "vrf-coordinator": VRFCoordinatorMock,
+    "vrf-coordinator-v2": VRFCoordinatorV2Mock,
     "link-token": LinkToken,
 }
 
@@ -64,9 +66,10 @@ def deploy_mock(decimals=DECIMALS, start_val=STARTING_PRICE):
     MockV3Aggregator.deploy(decimals, start_val, {"from": acc})
     link_token_address = LinkToken.deploy({"from": acc})
     VRFCoordinatorMock.deploy(link_token_address, {"from": acc})
+    VRFCoordinatorV2Mock.deploy(10, 10, {"from": acc})
 
 
-LINK_AMOUNT = 270000000000000000
+LINK_AMOUNT = 1000000000000000000
 
 
 def fund_with_link(contract_address, acc=None, link_token=None, amount=LINK_AMOUNT):

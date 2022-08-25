@@ -1,18 +1,17 @@
-from brownie import Lottery, network, accounts, config
+from brownie import LotteryV2, network, accounts, config
 from scripts.helpful_scripts import get_acc, get_contract, fund_with_link
 import time
 
 
 def deploy():
     acc = get_acc()
-    contract = Lottery.deploy(
+    contract = LotteryV2.deploy(
         get_contract("eth-usd-priceFeed").address,
         get_contract("vrf-coordinator").address,
         get_contract("link-token").address,
-        config["networks"][network.show_active()]["fee"],
         config["networks"][network.show_active()]["key_hash"],
         {"from": acc},
-        # publish_source=config["networks"][network.show_active()].get("verify", False),
+        publish_source=config["networks"][network.show_active()].get("verify", False),
     )
     print("Lottery Deployed!!")
     return contract
@@ -53,6 +52,6 @@ def end_lottery():
 
 def main():
     deploy()
-    start_lottery()
-    enter_lottery("Abdullah")
-    end_lottery()
+    # start_lottery()
+    # enter_lottery("Abdullah")
+    # end_lottery()
