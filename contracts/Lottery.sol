@@ -21,6 +21,7 @@ contract Lottery is Ownable, VRFConsumerBase {
     LOTTERY_STATE public state;
     uint256 fee; //Link Token fee
     bytes32 keyHash;
+    event requested_randomness(bytes32 requestID);
 
     constructor(
         address _price_feed,
@@ -65,6 +66,8 @@ contract Lottery is Ownable, VRFConsumerBase {
     function endLottery() public {
         state = LOTTERY_STATE.running;
         bytes32 requestID = requestRandomness(keyHash, fee); //This will return a bytes32 requestID
+        emit requested_randomness(requestID);
+        //This is done so that the request ID is emitted onthe blockchain node as an event that we can access
     }
 
     function fulfillRandomness(bytes32 _requestId, uint256 _randomness)

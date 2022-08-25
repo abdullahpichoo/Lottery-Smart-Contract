@@ -81,9 +81,7 @@ def fund_with_link(contract_address, acc=None, link_token=None, amount=LINK_AMOU
         link_token = get_contract("link-token")
     # 7.43.48 Interface working example to replace Line 55
     # link_token_contract = interface.LinkTokenInterface(link_token.address)
-    print(link_token.totalSupply())
-    print(link_token.name())
     tx = link_token.transfer(contract_address, amount, {"from": acc})
     tx.wait(1)
-    print("Contract Funded with Link")
+    print(f"Contract Funded with Link")
     return tx

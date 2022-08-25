@@ -11,3 +11,8 @@
 - start with `mainnet-fork` as I'm working with onchain aggv3
 - then I'll work with `development` network for function testing with mocks
 - finally I'll test on `testnet`
+
+# Testing
+
+- Unit Tests: tests conducted on local development blockchain in which we test small pieces of code like individual functions. This makes sure every functions is behaving properly.
+- Integration Tests: In this, we test multiple functions at once to test their working and are usually on Testnets after we have successfuly conducted our unit tests.
