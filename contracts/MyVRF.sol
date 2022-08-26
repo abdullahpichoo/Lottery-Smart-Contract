@@ -16,20 +16,6 @@ contract MyVRF is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface COORDINATOR;
     LinkTokenInterface LINKTOKEN;
 
-    // // Goerli coordinator. For other networks,
-    // // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    // address vrfCoordinator = 0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D;
-
-    // // Goerli LINK token contract. For other networks, see
-    // // https://docs.chain.link/docs/vrf-contracts/#configurations
-    // address link_token_contract = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
-
-    // // The gas lane to use, which specifies the maximum gas price to bump to.
-    // // For a list of available gas lanes on each network,
-    // // see https://docs.chain.link/docs/vrf-contracts/#configurations
-    // bytes32 keyHash =
-    //     0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15;
-
     // A reasonable default is 100000, but this value could be different
     // on other networks.
     uint32 callbackGasLimit = 100000;
@@ -59,11 +45,12 @@ contract MyVRF is VRFConsumerBaseV2 {
     ) VRFConsumerBaseV2(_vrfCoordinator) {
         link_token_contract = _link;
         keyHash = _keyHash;
+        vrfCoordinator = _vrfCoordinator;
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         LINKTOKEN = LinkTokenInterface(link_token_contract);
         s_owner = msg.sender;
         //Create a new subscription when you deploy the contract.
-        createNewSubscription();
+        //createNewSubscription();
     }
 
     // Assumes the subscription is funded sufficiently.
@@ -86,7 +73,7 @@ contract MyVRF is VRFConsumerBaseV2 {
     }
 
     // Create a new subscription when the contract is initially deployed.
-    function createNewSubscription() private onlyOwner {
+    function createNewSubscription() public onlyOwner {
         s_subscriptionId = COORDINATOR.createSubscription();
         // Add this contract as a consumer of its own subscription.
     }

@@ -44,7 +44,8 @@ def end_lottery():
     print(f"Balance of this contract: {lottery.balance()}")
     tx = lottery.endLottery({"from": acc})
     tx.wait(1)
-    time.sleep(60)
+    time.sleep(90)
+    print(f"Returned random number: {lottery.random_val()}")
     winner_address = lottery.last_winner()
     print(
         f"Winner Address is: {winner_address} with Name: {lottery.player_names(winner_address)}"

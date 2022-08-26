@@ -10,7 +10,7 @@ contract Lottery is Ownable, VRFConsumerBase {
     address payable[] public players;
     mapping(address => string) public player_names;
     uint256 internal minUSD;
-    uint256 random_val;
+    uint256 public random_val;
     address payable public last_winner;
     AggregatorV3Interface public price_feed;
     enum LOTTERY_STATE {
