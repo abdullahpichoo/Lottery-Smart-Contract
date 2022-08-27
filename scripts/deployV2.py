@@ -1,5 +1,6 @@
 from brownie import LotteryV2, network, accounts, config
 from scripts.helpful_scripts import get_acc, get_contract, fund_with_link
+from scripts.deploy_myVRF import get_random
 import time
 
 
@@ -7,11 +8,8 @@ def deploy():
     acc = get_acc()
     contract = LotteryV2.deploy(
         get_contract("eth-usd-priceFeed").address,
-        get_contract("vrf-coordinator").address,
-        get_contract("link-token").address,
-        config["networks"][network.show_active()]["key_hash"],
         {"from": acc},
-        publish_source=config["networks"][network.show_active()].get("verify", False),
+        # publish_source=config["networks"][network.show_active()].get("verify", False),
     )
     print("Lottery Deployed!!")
     return contract
@@ -19,7 +17,7 @@ def deploy():
 
 def start_lottery():
     acc = get_acc()
-    lottery = Lottery[-1]
+    lottery = LotteryV2[-1]
     tx = lottery.startLottery({"from": acc})
     tx.wait(1)
     print("Lottery Started!")
@@ -27,31 +25,30 @@ def start_lottery():
 
 def enter_lottery(name):
     acc = get_acc()
-    lottery = Lottery[-1]
+    lottery = LotteryV2[-1]
     entrance_fee = lottery.getEntranceFee() + 100000
-    tx = lottery.enter(name, {"from": acc, "value": entrance_fee})
-    tx.wait(1)
-    print("You entered the Lottery!")
+    for i in range(len(name)):
+        tx = lottery.enter(name[i], {"from": acc, "value": entrance_fee})
+        tx.wait(1)
+        print(f"{name[i]} entered the Lottery!")
 
 
 def end_lottery():
     acc = get_acc()
-    lottery = Lottery[-1]
+    lottery = LotteryV2[-1]
     print(f"Balance of this contract before funding: {lottery.balance()}")
-    tx = fund_with_link(lottery.address)
+    random_num = get_random()
+    print(f"Random num: {random_num}")
+    tx = lottery.chooseWinner(random_num, {"from": acc})
     tx.wait(1)
-    print(f"Balance of this contract: {lottery.balance()}")
-    tx = lottery.endLottery({"from": acc})
-    tx.wait(1)
-    time.sleep(60)
     winner_address = lottery.last_winner()
-    print(
-        f"Winner Address is: {winner_address} with Name: {lottery.player_names(winner_address)}"
-    )
+    winner_name = lottery.address_to_name(winner_address)
+    print(f"Winner Address is: {winner_address} with Name: {winner_name}")
 
 
 def main():
+    names = ["Abdullah", "Saif", "Junaid"]
     deploy()
-    # start_lottery()
-    # enter_lottery("Abdullah")
-    # end_lottery()
+    start_lottery()
+    enter_lottery(names)
+    end_lottery()

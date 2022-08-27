@@ -72,6 +72,10 @@ contract MyVRF is VRFConsumerBaseV2 {
         s_randomWords = randomWords;
     }
 
+    function getRandom() public view onlyOwner returns (uint256[] memory) {
+        return s_randomWords;
+    }
+
     // Create a new subscription when the contract is initially deployed.
     function createNewSubscription() public onlyOwner {
         s_subscriptionId = COORDINATOR.createSubscription();

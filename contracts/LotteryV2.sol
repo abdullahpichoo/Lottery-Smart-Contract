@@ -7,8 +7,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./MyVRF.sol";
 
 contract LotteryV2 is Ownable {
-    address payable[] public players;
-    mapping(address => string) public player_names;
+    mapping(address => string) public address_to_name;
+
+    struct Players {
+        address payable players_address;
+        string name;
+    }
+
+    Players[] public peeps;
+
     uint256 internal minUSD;
     uint256 random_val;
     address payable public last_winner;
@@ -43,8 +50,9 @@ contract LotteryV2 is Ownable {
     function enter(string memory name) public payable {
         require(state == LOTTERY_STATE.open, "Lottery hasn't started yet!");
         require(msg.value > getEntranceFee(), "Please send more ETH to enter!");
-        players.push(payable(msg.sender));
-        player_names[msg.sender] = name;
+
+        peeps.push(Players(payable(msg.sender), name));
+        address_to_name[msg.sender] = name;
     }
 
     function startLottery() public onlyOwner {
@@ -52,35 +60,24 @@ contract LotteryV2 is Ownable {
         state = LOTTERY_STATE.open;
     }
 
-    function endLottery(uint256 rand) public {
+    function getParticipants() public view returns (Players[] memory) {
+        return peeps;
+    }
+
+    function chooseWinner(uint256 rand) public onlyOwner {
         state = LOTTERY_STATE.running;
         require(state == LOTTERY_STATE.running, "Still working!");
         require(rand > 0, "Random Number not Returned");
-        updateRandomness(rand);
-        uint256 winner_index = rand % players.length;
-        last_winner = players[winner_index];
+
+        uint256 winner_index = rand % peeps.length;
+        last_winner = peeps[winner_index].players_address;
         last_winner.transfer(address(this).balance);
-        //Lottery Reset
-        players = new address payable[](0);
-        state = LOTTERY_STATE.close;
+        endLottery();
     }
 
-    // function fulfillRandomness(bytes32 _requestId, uint256 _randomness)
-    //     internal
-    //     override
-    // {
-    //     require(state == LOTTERY_STATE.running, "Still working!");
-    //     require(_randomness > 0, "Random Number not Returned");
-    //     updateRandomness(_randomness);
-    //     uint256 winner_index = _randomness % players.length;
-    //     last_winner = players[winner_index];
-    //     last_winner.transfer(address(this).balance);
-    //     //Lottery Reset
-    //     players = new address payable[](0);
-    //     state = LOTTERY_STATE.close;
-    // }
-
-    function updateRandomness(uint256 _randomness) public {
-        random_val = _randomness;
+    function endLottery() internal {
+        //Lottery Reset
+        //peeps = new Players[](0);
+        state = LOTTERY_STATE.close;
     }
 }
